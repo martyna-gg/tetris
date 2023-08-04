@@ -96,7 +96,7 @@ class Letter:
             self.down()
 
 
-decision = input("select e for exit, p for new piece, d for down, rt for rotate, l for left, r for right or b for break ")
+decision = input("select e for exit, p for new piece, d for down, rt for rotate, l for left, r for right or b for break ") #tutaj trzena zrobić zmianę menu
 
 while decision != 'e':
     if decision not in ['e', 'p', 'd', 'r', 'l', 'rt', 'b']:
