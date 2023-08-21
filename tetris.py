@@ -3,9 +3,11 @@ import random
 
 global decision_letter
 global state
+global score
 decision_grid = [10, 5]
 state = 0
 decision = ''
+score = 0
 
 left_border = [x * int(decision_grid[0]) for x in range(0, int(decision_grid[1]))]
 right_border = [x * int(decision_grid[0]) - 1 for x in range(1, int(decision_grid[1]) + 1)]
@@ -23,6 +25,16 @@ def grid_print():
     for x in range(int(decision_grid[1])):
         print(' '.join(map(str, np.reshape(grid, (int(decision_grid[1]), int(decision_grid[0])))[x])))
     print()
+
+def check_scores():
+    best_score = open('scores.txt', 'r')
+    if int(best_score.read()) >= score:
+        best_score.close()
+    else:
+        best_score.close()
+        best_score = open('scores.txt', 'w')
+        best_score.write(str(score))
+        best_score.close()
 
 
 letters = {'O': [[4, 14, 15, 5], [4, 14, 15, 5]],
@@ -48,15 +60,24 @@ class Letter:
 
     def break_line(self):
         check = 0
+        global score
         global grid
         new_grid = []
         for x in range(int(decision_grid[1])):
             if all([a == '0' for a in np.reshape(grid, (int(decision_grid[1]), int(decision_grid[0])))[x]]):
                 new_grid = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-'] + new_grid
-                check = 1
+                check += 1
             else:
                 new_grid = new_grid + list(np.reshape(grid, (int(decision_grid[1]), int(decision_grid[0])))[x])
         if check:
+            if check == 1:
+                score += 100
+            if check == 2:
+                score += 400
+            if check == 3:
+                score += 900
+            if check == 4:
+                score += 2000
             grid = np.array(new_grid)
             grid_print()
 
@@ -180,10 +201,14 @@ while state != 4:
         while decision not in ['g', 'b', 'e']:
             decision = input("select g for game, b for best score or e for exit ")
         if decision == 'b':
+            best_score = open('scores.txt', 'r')
+            print(best_score.read())
+            best_score.close()
             state = 0
         if decision == 'g':
             state = 1
         if decision == 'e':
+            check_scores()
             state = 4
     if state == 1:
         decision_grid = [10, input("select the number of rows ")]
@@ -205,6 +230,7 @@ while state != 4:
         while decision not in ['p', 's', 'e']:
             decision = input("select p for piece, s for your score or e for exit ")
         if decision == 's':
+            print(score)
             state = 2
         if decision == 'p':
             decision_letter = random.choice(['I', 'S', 'Z', 'L', 'J', 'T', 'O'])
@@ -214,9 +240,11 @@ while state != 4:
                 state = 3
             else:
                 letter.print_position()
+                check_scores()
                 print('Game over!')
                 state = 4
         if decision == 'e':
+            check_scores()
             state = 4
     if state == 3:
         if letter.check_bottom():
@@ -225,47 +253,53 @@ while state != 4:
                 decision = input("select e for exit, d for down, rt for rotate, l for left or r for right ")
             if decision == 'd':
                 letter.down()
-                letter.break_line()
                 if letter.check_top() and letter.check_bottom():
                     state = 3
                 if not letter.check_top():
+                    check_scores()
                     print('Game over!')
                     state = 4
                 if not letter.check_bottom():
+                    letter.break_line()
                     state = 2
             if decision == 'rt':
                 letter.rotate()
-                letter.break_line()
                 if letter.check_top() and letter.check_bottom():
                     state = 3
                 if not letter.check_top():
+                    check_scores()
                     print('Game over!')
                     state = 4
                 if not letter.check_bottom():
+                    letter.break_line()
                     state = 2
             if decision == 'l':
                 letter.left()
-                letter.break_line()
                 if letter.check_top() and letter.check_bottom():
                     state = 3
                 if not letter.check_top():
+                    check_scores()
                     print('Game over!')
                     state = 4
                 if not letter.check_bottom():
+                    letter.break_line()
                     state = 2
             if decision == 'r':
                 letter.right()
-                letter.break_line()
                 if letter.check_top() and letter.check_bottom():
                     state = 3
                 if not letter.check_top():
+                    check_scores()
                     print('Game over!')
                     state = 4
                 if not letter.check_bottom():
+                    letter.break_line()
                     state = 2
             if decision == 'e':
+                check_scores()
                 state = 4
         else:
+            letter.break_line()
             state = 2
 
    
